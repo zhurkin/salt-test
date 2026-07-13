@@ -1,0 +1,7 @@
+{% import_yaml "formulas/salt_self_management/defaults.yaml" as defaults %}
+
+{% set salt_self_management = salt['pillar.get'](
+    'salt_self_management',
+    default=defaults.get('salt_self_management', {}),
+    merge=True
+) %}

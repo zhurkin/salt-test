@@ -1,0 +1,16 @@
+salt_self_management:
+  execution_mode: safe
+  safe_apply:
+    manage: true
+    enabled: true
+    state_dir: /var/lib/salt-installer/self-management
+    candidate_dir: /var/lib/salt-installer/self-management/candidate
+    installer_lock: /run/salt-installer/self-management.lock
+    helper: /usr/local/libexec/salt-self-management/salt-safe-apply.py
+    python: /opt/saltstack/salt/bin/python3
+    unit: /etc/systemd/system/salt-self-management-apply@.service
+    environment_file: /etc/salt-self-management/guard.env
+    apply_wait_timeout: 210
+    health_timeout: 20
+    minion_master_probe_enabled: true
+    minion_master_probe_timeout: 15

@@ -1,0 +1,25 @@
+{% from "formulas/salt_minion/map.jinja" import salt_minion with context -%}
+{% from "formulas/salt_self_management/map.jinja" import salt_self_management with context -%}
+{% set guard = salt_self_management.get('safe_apply', {}) -%}
+{% set candidate = guard.get('candidate_dir') ~ '/minion' -%}
+{% set schedule = salt_minion.get('schedule', {}).get('self_management', {}) -%}
+{
+  "component": "minion",
+  "service_enabled": {{ 'true' if salt_minion.get('service', {}).get('enabled', true) else 'false' }},
+  "service_running": {{ 'true' if salt_minion.get('service', {}).get('running', true) else 'false' }},
+  "manage_schedule": {{ 'true' if schedule.get('manage', false) else 'false' }},
+  "files": [
+    {
+      "live": "/etc/salt/minion.d/10-master.conf",
+      "state": "present",
+      "candidate": "{{ candidate }}/etc/salt/minion.d/10-master.conf",
+      "mode": "0644"
+    }{% if schedule.get('manage', false) %},
+    {
+      "live": "/etc/salt/minion.d/30-schedule.conf",
+      "state": "{{ 'present' if schedule.get('enabled', false) else 'absent' }}",
+      "candidate": {% if schedule.get('enabled', false) %}"{{ candidate }}/etc/salt/minion.d/30-schedule.conf"{% else %}null{% endif %},
+      "mode": "0644"
+    }{% endif %}
+  ]
+}

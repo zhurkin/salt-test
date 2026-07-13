@@ -1,0 +1,5 @@
+{% from "formulas/salt_master/map.jinja" import salt_master with context -%}
+# Managed by Salt formula salt_master.
+interface: {{ salt_master.get('interface', '0.0.0.0') | yaml_dquote }}
+publish_port: {{ salt_master.get('publish_port', 4505) }}
+ret_port: {{ salt_master.get('ret_port', 4506) }}

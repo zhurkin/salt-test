@@ -1,0 +1,27 @@
+[Unit]
+Description=Safely apply Salt %i configuration candidate
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+EnvironmentFile=-/etc/salt-self-management/guard.env
+RuntimeDirectory=salt-self-management-%i
+RuntimeDirectoryMode=0700
+Environment=HOME=/run/salt-self-management-%i
+Environment=XDG_DATA_HOME=/run/salt-self-management-%i/.local/share
+Environment=RELENV_DATA=/run/salt-self-management-%i/.local/share/relenv
+UMask=0077
+ExecStartPre=/usr/bin/sleep 5
+ExecStart=/opt/saltstack/salt/bin/python3 /usr/local/libexec/salt-self-management/salt-safe-apply.py activate %i
+TimeoutStartSec=180
+TimeoutStopSec=30
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=6
+PrivateTmp=true
+ProtectHome=true
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

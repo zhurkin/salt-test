@@ -1,0 +1,14 @@
+{% from "formulas/salt_minion/map.jinja" import salt_minion with context -%}
+{% set masters = salt_minion.get('masters', []) -%}
+{% set failover = salt_minion.get('failover', {}) -%}
+# Managed by Salt formula salt_minion.
+{% if masters | length == 1 %}master: {{ masters[0] | yaml_dquote }}
+{% else %}master:
+{% for master in masters %}  - {{ master | yaml_dquote }}
+{% endfor %}master_type: failover
+retry_dns: {{ failover.get('retry_dns', 0) }}
+master_alive_interval: {{ failover.get('master_alive_interval', 30) }}
+master_failback: {{ failover.get('master_failback', true) | yaml_encode }}
+master_failback_interval: {{ failover.get('master_failback_interval', 30) }}
+random_master: {{ failover.get('random_master', false) | yaml_encode }}
+{% endif -%}

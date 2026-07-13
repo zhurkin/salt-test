@@ -1,0 +1,13 @@
+{% from "formulas/salt_minion/map.jinja" import salt_minion with context -%}
+{% set logrotate = salt_minion.get('logrotate', {}) -%}
+# Managed by Salt formula salt_minion.
+{{ logrotate.get('log_file', '/var/log/salt/minion') }} {
+    {{ logrotate.get('frequency', 'daily') }}
+    rotate {{ logrotate.get('rotate', 14) | int }}
+    maxsize {{ logrotate.get('maxsize', '100M') }}
+    missingok
+    notifempty
+    compress
+    delaycompress
+    copytruncate
+}

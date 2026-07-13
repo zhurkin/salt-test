@@ -1,0 +1,7 @@
+{% import_yaml "formulas/salt_master/defaults.yaml" as defaults %}
+
+{% set salt_master = salt['pillar.get'](
+    'salt_master',
+    default=defaults.get('salt_master', {}),
+    merge=True
+) %}

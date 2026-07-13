@@ -1,0 +1,7 @@
+schema_version: 1
+name: minion_healthcheck_on_start
+enabled: false
+event:
+  tag: 'salt/minion/*/start'
+handler:
+  source: 'reactor/minion_lifecycle/healthcheck_on_start/handler.sls'

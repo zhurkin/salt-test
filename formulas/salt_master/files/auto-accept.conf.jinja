@@ -1,0 +1,3 @@
+{% from "formulas/salt_master/map.jinja" import salt_master with context -%}
+# Managed by Salt formula salt_master.
+auto_accept: {{ salt_master.get('auto_accept', false) | yaml_encode }}

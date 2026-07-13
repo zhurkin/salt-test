@@ -1,0 +1,29 @@
+salt_master:
+  interface: 0.0.0.0
+  publish_port: 4505
+  ret_port: 4506
+  auto_accept: false
+  project_root: /srv/salt
+  pillar_root: /srv/pillar
+  fileserver:
+    mode: roots
+  gitfs:
+    provider: gitcli
+    update_interval: 180
+    project_repo:
+      enabled: false
+      url: https://git.example.local/infra/salt-project.git
+      base: main
+      ssl_verify: true
+      unsafe_ssl_no_verify: false
+      proxy: null
+  logrotate:
+    manage: true
+    enabled: true
+    frequency: daily
+    rotate: 14
+    maxsize: 100M
+  service:
+    enabled: true
+    running: true
+    restart_on_change: false

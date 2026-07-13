@@ -1,0 +1,36 @@
+salt_minion:
+  masters:
+    - salt-master-a.example.local
+    - salt-master-b.example.local
+  failover:
+    retry_dns: 0
+    master_alive_interval: 30
+    master_failback: true
+    master_failback_interval: 30
+    random_master: false
+  schedule:
+    self_management:
+      manage: true
+      enabled: true
+      minutes: 15
+      splay: 300
+      run_on_start: false
+  logrotate:
+    manage: true
+    enabled: true
+    frequency: daily
+    rotate: 14
+    maxsize: 100M
+  service:
+    enabled: true
+    running: true
+    restart_on_change: false
+
+salt_self_management:
+  execution_mode: safe
+  safe_apply:
+    manage: true
+    enabled: true
+    health_timeout: 20
+    minion_master_probe_enabled: true
+    minion_master_probe_timeout: 15

@@ -1,0 +1,35 @@
+{% from "formulas/salt_master/map.jinja" import salt_master with context -%}
+{% from "formulas/salt_self_management/map.jinja" import salt_self_management with context -%}
+{% set guard = salt_self_management.get('safe_apply', {}) -%}
+{% set candidate = guard.get('candidate_dir') ~ '/master/etc/salt/master.d' -%}
+{
+  "component": "master",
+  "service_enabled": {{ 'true' if salt_master.get('service', {}).get('enabled', true) else 'false' }},
+  "service_running": {{ 'true' if salt_master.get('service', {}).get('running', true) else 'false' }},
+  "files": [
+    {
+      "live": "/etc/salt/master.d/10-network.conf",
+      "state": "present",
+      "candidate": "{{ candidate }}/10-network.conf",
+      "mode": "0644"
+    },
+    {
+      "live": "/etc/salt/master.d/20-auto-accept.conf",
+      "state": "present",
+      "candidate": "{{ candidate }}/20-auto-accept.conf",
+      "mode": "0644"
+    },
+    {
+      "live": "/etc/salt/master.d/30-project-roots.conf",
+      "state": "present",
+      "candidate": "{{ candidate }}/30-project-roots.conf",
+      "mode": "0644"
+    },
+    {
+      "live": "/etc/salt/master.d/40-reactor.conf",
+      "state": "present",
+      "candidate": "{{ candidate }}/40-reactor.conf",
+      "mode": "0644"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{% from "formulas/salt_minion/map.jinja" import salt_minion with context -%}
+{% set schedule = salt_minion.get('schedule', {}).get('self_management', {}) -%}
+# Managed by Salt formula salt_minion.
+schedule:
+  salt_self_management:
+    function: state.sls
+    args:
+      - states.salt_self_management
+    minutes: {{ schedule.get('minutes', 15) | int }}
+    splay: {{ schedule.get('splay', 300) | int }}
+    run_on_start: {{ schedule.get('run_on_start', false) | yaml_encode }}
+    maxrunning: 1

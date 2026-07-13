@@ -1,0 +1,44 @@
+{% from "formulas/salt_master/map.jinja" import salt_master with context -%}
+{% set root = salt_master.get('project_root', '/srv/salt') -%}
+{% set pillar_root = salt_master.get('pillar_root', '/srv/pillar') -%}
+{% set fileserver = salt_master.get('fileserver', {}) -%}
+{% set mode = fileserver.get('mode', 'roots') -%}
+{% set gitfs = salt_master.get('gitfs', {}) -%}
+{% set repo = gitfs.get('project_repo', {}) -%}
+{% set auth = repo.get('auth', {}) -%}
+{% set remote_url = repo.get('url') -%}
+{% if auth.get('method') == 'basic' and auth.get('username') and auth.get('password') -%}
+{% set remote_url = remote_url | replace('https://', 'https://' ~ auth.get('username') ~ ':' ~ auth.get('password') ~ '@', 1) -%}
+{% elif auth.get('method') == 'token' and auth.get('username') and auth.get('token') -%}
+{% set remote_url = remote_url | replace('https://', 'https://' ~ auth.get('username') ~ ':' ~ auth.get('token') ~ '@', 1) -%}
+{% endif -%}
+# Managed by Salt formula salt_master.
+{% if mode == 'gitfs' -%}
+fileserver_backend:
+  - gitfs
+
+gitfs_provider: {{ gitfs.get('provider', 'gitcli') | yaml_dquote }}
+gitfs_update_interval: {{ gitfs.get('update_interval', 180) }}
+
+gitfs_remotes:
+  - {{ remote_url | yaml_dquote }}:
+    - name: salt_project
+    - base: {{ repo.get('base', 'main') | yaml_dquote }}
+    - ssl_verify: {{ repo.get('ssl_verify', true) | yaml_encode }}
+{% if repo.get('proxy') %}
+    - proxy: {{ repo.get('proxy') | yaml_dquote }}
+{% endif %}
+
+pillar_roots:
+  base:
+    - {{ pillar_root | yaml_dquote }}
+{% else -%}
+fileserver_backend:
+  - roots
+file_roots:
+  base:
+    - {{ root | yaml_dquote }}
+pillar_roots:
+  base:
+    - {{ pillar_root | yaml_dquote }}
+{% endif -%}
